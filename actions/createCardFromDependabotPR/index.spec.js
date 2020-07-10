@@ -4,10 +4,10 @@ const { dnsLookupIpVersionToFamily } = require("got/dist/source/core/utils/dns-i
 
 const { sinon, proxyquire } = testHelpers;
 
-const DEPENDABOT_LOGIN = "JohnDMathis";
+const DEPENDABOT_LOGIN = "dependabot";
 
 describe.only( "createCardFromDependabotPR index", () => {
-	let github, apiFactory, cardDefinition, getInput, setOutput, setFailed, getBoard, createCard, log;
+	let github, apiFactory, cardDefinition, getInput, setOutput, setFailed, getBoard, createCard;
 	function init() {
 		github = {
 			context: {
@@ -15,7 +15,6 @@ describe.only( "createCardFromDependabotPR index", () => {
 			}
 		};
 
-		log = sinon.stub();
 		setOutput = sinon.stub();
 		getInput = sinon.stub()
 			.onCall( 0 ).returns( "https://acme.leankit.com/board/1234" )
@@ -46,7 +45,6 @@ describe.only( "createCardFromDependabotPR index", () => {
 		return proxyquire( "~/actions/createCardFromDependabotPR", {
 			"@actions/core": { getInput, setOutput, setFailed },
 			"@actions/github": github,
-			"../../utils/logger": log,
 			"./api/leankit": apiFactory
 		} );
 	}

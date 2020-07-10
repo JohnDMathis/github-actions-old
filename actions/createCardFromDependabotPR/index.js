@@ -3,11 +3,9 @@
 const { getInput, setOutput, setFailed } = require( "@actions/core" );
 const github = require( "@actions/github" );
 const { isNaN } = require( "lodash" );
-const log = require( "../../utils/logger" );
-// const { validateParams } = require( "../../utils/helpers" );
 const leankitApiFactory = require( "./api/leankit" );
 
-const DEPENDABOT_LOGIN = "JohnDMathis";
+const DEPENDABOT_LOGIN = "dependabot";
 
 function validateParams( params ) {
 	const values = [];
@@ -21,7 +19,7 @@ function validateParams( params ) {
 	return values;
 }
 
-( async () => {
+( async () => { // eslint-disable-line max-statements
 	const [
 		leankitBoardUrl,
 		apiToken,
@@ -40,7 +38,6 @@ function validateParams( params ) {
 	}
 
 	const { number, title, html_url: url, user: { login } } = github.context.payload.pull_request;
-	log( `Checking PR#${ number }: '${ title }' from ${ login }` );
 
 	const titleMatch = /^.+from (.*) to (.*)/.exec( title );
 	if ( !titleMatch || !login.includes( DEPENDABOT_LOGIN ) ) {
@@ -52,7 +49,7 @@ function validateParams( params ) {
 	const [ newMajorVersion ] = newVersion.split( "." );
 	const needsDevReview = newMajorVersion !== oldMajorVersion;
 	const typeId = getInput( "type-id" );
-	
+
 	const { getBoard, createCard } = leankitApiFactory( baseUrl, apiToken );
 
 	let reviewLaneId = reviewLaneIdOrTitle;
@@ -90,7 +87,6 @@ function validateParams( params ) {
 	} );
 
 	setOutput( "created-card-id", id );
-
 } )().catch( ex => {
 	setFailed( ex.message );
 } );
